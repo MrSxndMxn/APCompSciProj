@@ -11,7 +11,7 @@ class Game():
         pygame.init()
 
         pygame.display.set_caption("Wave Survivor")
-        self.width = 1920
+        self.width = 1280
         self.height = 720
         self.screen = pygame.display.set_mode((self.width, self.height))
         self.display = pygame.Surface((int(self.width), int(self.height)))
@@ -22,23 +22,19 @@ class Game():
 
         #assets stored in dictionary
         self.assets = {
-            'player': pygame.image.load("assets/semiImgs/Aquatic Scourge Style Ant-1.png.png"),
-            'ant': pygame.image.load("assets/semiImgs/Aquatic Scourge Style Ant-1.png.png")
+            'player': pygame.image.load("Assets/Imgs/APCOMPSCIPLAYER-1.png.png"),
+            'ant': pygame.image.load("Assets/Imgs/Ant-1.png.png"),
+            'background': pygame.image.load("Assets/Imgs/APCompSciBackgrond Draft2-1.png.png")
         }
 
         #Player code
-        self.player = pygame.image.load("assets/semiImgs/Aquatic Scourge Style Ant-1.png.png")
-
-        
-
         self.movement = [False, False, False, False]
         self.scroll = [0, 0]
 
-        self.playerStats = NPC.player(self, (160, 160), 100, 3, 2, [1280, 400])
+        self.playerStats = NPC.player(self, (84, 84), 100, 3, 2, [1280, 400])
 
         #enemy code
-        self.enemy = NPC.npc(self, (160, 160), 10, 2, 1, self.playerStats.myPos[0], self.playerStats.myPos[1], [100, 10])
-        self.enemyImg = pygame.image.load("assets/semiImgs/Aquatic Scourge Style Ant-1.png.png")
+        self.enemy = NPC.npc(self, (84, 84), 10, 2, 1, self.playerStats.myPos[0], self.playerStats.myPos[1], [100, 10])
 
         #function to update the position of npcs
     def updateNPCPos(self):
@@ -61,11 +57,15 @@ class Game():
         if distance > 0:
             self.enemy.myPos[0] += directionX * self.enemy.maxSpeed
             self.enemy.myPos[1] += directionY * self.enemy.maxSpeed
+
+    #Renders the background to make it move around the camera
+    def renderBackground(self, surface, offset=(0, 0)):
+        surface.blit(self.assets['background'], (0 - offset[0], 0 - offset[1]))
         
 
     def run(self):
         while True:
-            self.display.fill((0, 50, 100))
+            #self.display.blit(self.assets['background'], (0, 0))
 
             self.scroll[0] += (self.playerStats.playerCollision().centerx - self.display.get_width() / 2- self.scroll[0])  / 1
             self.scroll[1] += (self.playerStats.playerCollision().centery - self.display.get_height() / 2 - self.scroll[1])  / 1
@@ -74,6 +74,7 @@ class Game():
             self.playerStats.myPos[1] += self.movement[3] - self.movement[2]
             self.playerStats.myPos[0] += self.movement[1] - self.movement[0]
 
+            self.renderBackground(self.display, offset=(renderScroll))
             self.playerStats.renderPlayer(self.display, offset=renderScroll)
             self.enemy.renderNPC(self.display, offset=(renderScroll))
             #updates npc position
